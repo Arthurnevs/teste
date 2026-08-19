@@ -8,47 +8,83 @@ const memories = Array.from(
 );
 
 const notes = [
-  ["Seu sorriso", "que faz qualquer dia comum parecer especial."],
-  ["Seu jeitinho", "que me ganha de novo, até quando você nem percebe."],
-  ["Nós dois", "porque perto de você, até o silêncio tem graça."],
+  ["Sono profissional", "Você não dorme; você entra em modo de hibernação. Se deixar, acorda só no próximo semestre."],
+  ["Quase psicóloga", "Estuda a mente humana e, mesmo assim, decidiu gostar de mim. Um caso lindo para análise."],
+  ["Macarrão sempre", "Eu comeria macarrão todos os dias com você — e ainda dividiria a última garfada."],
+  ["Um Dreher", "O brinde oficial das nossas histórias. Porque um grande amor também merece um copo erguido."],
 ];
 
 export function LoveStory() {
   const [opened, setOpened] = useState(false);
   const [active, setActive] = useState(0);
   const [answered, setAnswered] = useState(false);
+  const [musicOn, setMusicOn] = useState(false);
+  const [teasePhase, setTeasePhase] = useState(0);
   const carousel = useRef<HTMLDivElement>(null);
+  const audio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    if (!opened) return;
-    const timer = window.setInterval(
-      () => setActive((current) => (current + 1) % memories.length),
-      4200,
-    );
-    return () => window.clearInterval(timer);
-  }, [opened]);
+    if (teasePhase === 0 || teasePhase === 3) return;
+    const unlock = window.setTimeout(() => setTeasePhase(3), 4600);
+    const nextJoke = teasePhase === 1
+      ? window.setTimeout(() => setTeasePhase(2), 1600)
+      : undefined;
+    return () => {
+      window.clearTimeout(unlock);
+      if (nextJoke) window.clearTimeout(nextJoke);
+    };
+  }, [teasePhase]);
 
   const move = useCallback((direction: number) => {
-    setActive((current) =>
-      (current + direction + memories.length) % memories.length,
-    );
+    setActive((current) => {
+      const next = (current + direction + memories.length) % memories.length;
+      window.requestAnimationFrame(() => {
+        const container = carousel.current;
+        const selected = container?.querySelector<HTMLElement>(`[data-index="${next}"]`);
+        if (container && selected) {
+          container.scrollTo({
+            left: selected.offsetLeft - (container.clientWidth - selected.clientWidth) / 2,
+            behavior: "smooth",
+          });
+        }
+      });
+      return next;
+    });
   }, []);
-
-  useEffect(() => {
-    const selected = carousel.current?.querySelector(`[data-index="${active}"]`);
-    selected?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }, [active]);
 
   const openLetter = () => {
     setOpened(true);
-    window.setTimeout(() => {
-      document.querySelector("#historia")?.scrollIntoView({ behavior: "smooth" });
-    }, 650);
+    audio.current?.play().then(() => setMusicOn(true)).catch(() => setMusicOn(false));
+  };
+
+  const toggleMusic = () => {
+    if (!audio.current) return;
+    if (audio.current.paused) {
+      audio.current.play().then(() => setMusicOn(true)).catch(() => setMusicOn(false));
+    } else {
+      audio.current.pause();
+      setMusicOn(false);
+    }
+  };
+
+  const tease = () => {
+    if (teasePhase === 3) {
+      setAnswered(true);
+      return;
+    }
+    if (teasePhase === 0) setTeasePhase(1);
   };
 
   return (
     <main>
       <div className="grain" aria-hidden="true" />
+      <audio ref={audio} src="/memories/Jorge%20Vercillo%20-%20Monalisa.mp3" loop preload="auto" />
+      {opened && (
+        <button className={`music-toggle ${musicOn ? "playing" : ""}`} onClick={toggleMusic} type="button" aria-label={musicOn ? "Pausar música" : "Tocar música"}>
+          <span aria-hidden="true">♫</span>
+          <span>{musicOn ? "Monalisa tocando" : "Tocar Monalisa"}</span>
+        </button>
+      )}
 
       <section className={`hero ${opened ? "is-open" : ""}`}>
         <div className="hero-photo" aria-hidden="true" />
@@ -104,8 +140,8 @@ export function LoveStory() {
       </section>
 
       <section className="reasons">
-        <p className="eyebrow">se eu tivesse que resumir...</p>
-        <h2>São infinitos motivos.<br />Estes são só três.</h2>
+        <p className="eyebrow">diagnóstico nada profissional</p>
+        <h2>O dossiê Angeliny.</h2>
         <div className="reason-grid">
           {notes.map(([title, text], index) => (
             <article className="reason-card" key={title}>
@@ -180,14 +216,16 @@ export function LoveStory() {
             dias mais leves e meus planos muito mais bonitos só por estar neles.
           </p>
           <p>
-            Quero continuar colecionando cafés, viagens, fotos tremidas, abraços
-            demorados e todas as pequenas coisas que viram gigantes quando são
-            vividas ao seu lado.
+            Quero continuar colecionando fotos tremidas, abraços demorados e
+            todas as pequenas coisas que viram gigantes ao seu lado. Inclusive
+            tentar te acordar depois da décima quarta soneca — tarefa que nem
+            todo o curso de Psicologia conseguiria explicar.
           </p>
           <p>
-            Eu escolho você nos dias extraordinários — e, principalmente, nos
-            dias comuns. É você quem eu quero por perto quando a vida estiver
-            acontecendo de verdade.
+            Eu comeria macarrão todos os dias com você. Dividiria a última
+            garfada, ouviria suas teorias sobre a mente humana e brindaria com
+            um Dreher a cada nova história nossa. Eu escolho você nos dias
+            extraordinários — e, principalmente, nos dias comuns.
           </p>
           <p className="signature">Com todo o meu amor,<br /><strong>para sempre seu.</strong></p>
         </div>
@@ -198,11 +236,23 @@ export function LoveStory() {
           {Array.from({ length: 18 }, (_, i) => <i key={i}>♥</i>)}
         </div>
         <p className="eyebrow">e depois de tudo...</p>
-        <h2>Angeliny, aceita continuar<br />escrevendo essa história comigo?</h2>
+        <h2>Angeliny, aceita<br />namorar comigo?</h2>
         {!answered ? (
-          <button className="yes-button" onClick={() => setAnswered(true)} type="button">
-            Sempre, meu amor ♥
-          </button>
+          <div className="proposal-stage">
+            <p className={`tease-message phase-${teasePhase}`} aria-live="polite">
+              {teasePhase === 1 && "Então você não quer namorar comigo???"}
+              {teasePhase === 2 && "Brincadeira besta, pode clicar agora, vai!"}
+              {teasePhase === 3 && "Agora pode. Juro. 😇"}
+            </p>
+            <button
+              className={`yes-button dodge-${teasePhase}`}
+              onClick={tease}
+              onPointerEnter={() => teasePhase === 0 && setTeasePhase(1)}
+              type="button"
+            >
+              {teasePhase === 3 ? "Agora sim: eu aceito ♥" : "Eu aceito namorar você ♥"}
+            </button>
+          </div>
         ) : (
           <div className="answer" role="status">
             <span>♥</span>
