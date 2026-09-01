@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "https://para-voce-angeliny.arthurnbnb.chatgpt.site";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Para Angeliny, com amor",
   description: "Uma declaração feita de memórias, carinho e muito amor.",
   openGraph: {
