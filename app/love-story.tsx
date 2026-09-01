@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const originalMemories = Array.from(
   { length: 19 },
@@ -160,6 +160,7 @@ export function LoveStory() {
   const [revealedCount, setRevealedCount] = useState(0);
   const [revealedStoryCount, setRevealedStoryCount] = useState(0);
   const carousel = useRef<HTMLDivElement>(null);
+  const carouselScrollFrame = useRef<number | null>(null);
   const audio = useRef<HTMLAudioElement>(null);
 
   const move = useCallback((direction: number) => {
@@ -177,6 +178,38 @@ export function LoveStory() {
       });
       return next;
     });
+  }, []);
+
+  const syncActiveMemory = useCallback(() => {
+    if (carouselScrollFrame.current !== null) return;
+
+    carouselScrollFrame.current = window.requestAnimationFrame(() => {
+      carouselScrollFrame.current = null;
+      const container = carousel.current;
+      if (!container) return;
+
+      const containerCenter = container.scrollLeft + container.clientWidth / 2;
+      const cards = container.querySelectorAll<HTMLElement>("[data-index]");
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      cards.forEach((card) => {
+        const cardCenter = card.offsetLeft + card.clientWidth / 2;
+        const distance = Math.abs(cardCenter - containerCenter);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = Number(card.dataset.index ?? 0);
+        }
+      });
+
+      setActive((current) => current === closestIndex ? current : closestIndex);
+    });
+  }, []);
+
+  useEffect(() => () => {
+    if (carouselScrollFrame.current !== null) {
+      window.cancelAnimationFrame(carouselScrollFrame.current);
+    }
   }, []);
 
   const toggleMusic = () => {
@@ -449,7 +482,24 @@ export function LoveStory() {
           </div>
         </div>
 
-        <div className="carousel" ref={carousel}>
+        <div
+          className="carousel"
+          ref={carousel}
+          onScroll={syncActiveMemory}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowLeft") {
+              event.preventDefault();
+              move(-1);
+            }
+            if (event.key === "ArrowRight") {
+              event.preventDefault();
+              move(1);
+            }
+          }}
+          role="region"
+          aria-label="Galeria de fotos. Arraste ou use as setas esquerda e direita."
+          tabIndex={0}
+        >
           {memories.map((memory, index) => (
             <button
               className={`memory ${index === active ? "active" : ""}`}
@@ -457,6 +507,7 @@ export function LoveStory() {
               key={memory.src}
               onClick={() => setActive(index)}
               aria-label={`Ver memória ${index + 1}`}
+              aria-current={index === active ? "true" : undefined}
               type="button"
             >
               <img src={memory.src} alt={`Angeliny e seu amor: ${memory.caption}`} loading={index > 4 ? "lazy" : "eager"} />
@@ -464,7 +515,7 @@ export function LoveStory() {
             </button>
           ))}
         </div>
-        <p className="drag-note">arraste para passear pelas nossas memórias</p>
+        <p className="drag-note">arraste ou use as setas para passear pelas nossas memórias</p>
       </section>
 
       <section className="relationship-terms" aria-labelledby="terms-title">
