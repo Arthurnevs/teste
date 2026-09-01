@@ -16,6 +16,12 @@ npm run dev
 npm run build
 ```
 
+## Deployment targets
+
+- `npm run build` produces the Vinext/Cloudflare Sites deployment.
+- `npm run build:vercel` produces the Next.js deployment used by Vercel.
+- `vercel.json` keeps the Vercel framework and output settings independent from Sites.
+
 This starter does not use `wrangler.jsonc`.
 
 ## Included Shape
