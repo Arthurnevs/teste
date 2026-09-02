@@ -129,27 +129,19 @@ const relationshipTerms = [
 const unscriptedDates = [
   {
     src: "/memories/novas-ultimas/eu_comeria_hamburguer_agridoce_por_voce.jpeg",
-    act: "ato 01 · amor agridoce",
     title: "Te amo comendo hambúrguer agridoce",
-    text: "Eu comeria hambúrguer agridoce por você. E olha que isso já é uma declaração bem séria.",
   },
   {
     src: "/memories/novas-ultimas/foto_fofa_na_burgueria_79.jpeg",
-    act: "ato 02 · mesa para dois",
     title: "Nossa foto mais bonita juntos",
-    text: "Um coração no meio da foto e duas pessoas fingindo que esse date bonito é a coisa mais normal do mundo.",
   },
   {
     src: "/memories/novas-ultimas/fotinha_fofa_depois_de_voce_tomar_dreher_no_carioca.jpeg",
-    act: "ato 03 · depois do Dreher",
     title: "Te amo quando tu tá 3.5 de Dreher",
-    text: "A expressão serena de quem tomou Dreher no Carioca e, mesmo assim, ainda saiu bonita na foto.",
   },
   {
     src: "/memories/novas-ultimas/minha_ana_castela.jpeg",
-    act: "ato 04 · participação especial",
     title: "Te amo até vestida de Ana Castela",
-    text: "Chapéu na cabeça, pose de boiadeira e o meu coração completamente sem defesa.",
   },
 ];
 
@@ -439,9 +431,7 @@ export function LoveStory() {
                 <img src={date.src} alt={date.title} loading="lazy" />
               </div>
               <figcaption>
-                <span>{date.act}</span>
                 <h3>{date.title}</h3>
-                <p>{date.text}</p>
               </figcaption>
             </figure>
           ))}

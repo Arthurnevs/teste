@@ -159,12 +159,12 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; }
 .date-card:nth-child(3) { transform: translateY(-8px) rotate(1deg); }
 .date-card:nth-child(4) { transform: translateY(22px) rotate(-1.5deg); }
 .date-card::before { position: absolute; z-index: 2; top: -12px; left: 50%; width: 92px; height: 27px; content: ""; background: rgba(219,184,158,.72); box-shadow: 0 3px 8px rgba(75,43,35,.08); transform: translateX(-50%) rotate(-2deg); }
-.date-photo { min-height: 474px; overflow: hidden; background: #d9c8bd; }
-.date-photo img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.9) sepia(.04); transition: transform .75s cubic-bezier(.2,.8,.2,1), filter .75s; }
+.date-photo { display: flex; min-height: 474px; overflow: hidden; background: #eadfd7; }
+.date-photo img { width: 100%; height: 100%; object-fit: contain; filter: saturate(.9) sepia(.04); transition: transform .75s cubic-bezier(.2,.8,.2,1), filter .75s; }
 .date-card:hover .date-photo img { transform: scale(1.035); filter: none; }
-.date-card figcaption { display: flex; flex-direction: column; justify-content: center; padding: 34px 27px; }
+.date-card figcaption { display: flex; flex-direction: column; justify-content: center; padding: 34px 27px; text-align: center; }
 .date-card figcaption > span { color: var(--wine); font-size: 8px; font-weight: 700; letter-spacing: .18em; line-height: 1.5; text-transform: uppercase; }
-.date-card h3 { margin: 30px 0 15px; color: var(--wine); font-size: clamp(29px, 3vw, 42px); font-style: italic; line-height: .95; }
+.date-card h3 { margin: 0; color: var(--wine); font-size: clamp(29px, 3vw, 42px); font-style: italic; line-height: .95; }
 .date-card p { margin: 0; color: #6c5750; font-family: var(--display); font-size: 16px; line-height: 1.62; }
 .circus-finale { position: relative; display: grid; grid-template-columns: .78fr 1.22fr; max-width: 1080px; margin: 105px auto 0; color: white; background: #67202b; box-shadow: 0 30px 85px rgba(63,25,29,.25); }
 .circus-finale::before, .circus-finale::after { position: absolute; z-index: 2; top: 0; bottom: 0; left: 42.5%; width: 16px; content: ""; background: radial-gradient(circle, #f0e2d5 0 5px, transparent 5.5px) center -7px / 16px 27px repeat-y; transform: translateX(-50%); pointer-events: none; }
